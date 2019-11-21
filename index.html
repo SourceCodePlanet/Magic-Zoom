@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <title>Magic Zoom</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+    #container {
+      box-shadow: 1px 1px 2px #aaa, -2px -2px 1px #ccc;
+      position: relative;
+      width: 360px;
+      height: 480px;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    #container:hover #overlay {
+      display: none;
+    }
+    canvas:not(#loop) {
+      position: absolute;
+      top: 0;
+      left: 0;
+      cursor: none;
+      border-bottom: 5px double #aaa;
+    }
+    #overlay {
+      position: absolute;
+      top: 240px;
+      left: 0;
+      width: 360px;
+      height: 240px;
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font: 50px Comic Sans Ms, sans-serif;
+      color: white;
+      text-shadow: 1px 1px 2px #777;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="container">
+    <div id="overlay">Zoom In!</div>
+    <img src="harley.jpg" width="360" height="240">
+    <canvas width="360" height="240"></canvas>
+    <canvas id="loop" width="360" height="240">
+  </div>
+  <script>
+    var canvas = document.querySelector("canvas"),
+      ctx = canvas.getContext("2d"),
+      loopCanvas = document.querySelector("#loop"),
+      loopCtx = loopCanvas.getContext("2d"),
+      harleyImage = document.querySelector("img");
+
+    loopCtx.scale(3, 3);
+
+    canvas.onmousemove = function(e) {
+      var ex = e.offsetX, ey = e.offsetY;
+
+      if(ex - 60 <= 0) {
+        ex += 60 - ex;
+      }else if(ex + 60 >= 360) {
+        ex = 300;
+      }
+
+      if(ey - 40 <= 0) {
+        ey += 40 - ey;
+      }else if(ey + 40 >= 240) {
+        ey = 200;
+      }
+
+      ctx.clearRect(0, 0, 360, 240);
+      drawRect(ex - 60, ey - 40, ex + 60, ey + 40, "yellow");
+      loopCtx.clearRect(0, 0, 360, 240);
+      loopCtx.drawImage(harleyImage, -ex + 60, -ey + 40, 360, 240);
+    }
+
+    function drawRect(xStart, yStart, xEnd, yEnd, color) {
+      ctx.strokeStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(xStart, yStart);
+      ctx.lineTo(xEnd, yStart);
+      ctx.lineTo(xEnd, yEnd);
+      ctx.lineTo(xStart, yEnd);
+      ctx.closePath();
+      ctx.stroke();
+    }
+  </script>
+</body>
+</html>
